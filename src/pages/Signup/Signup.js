@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import styled from "styled-components";
 
 const Signup = () => {
@@ -20,53 +21,67 @@ const Signup = () => {
 
   const isValidatePw = pw.length >= 8 ? "" : "8자 이상 입력해주세요";
 
-  const isSamePw = pw === re_pw ? "일치" : "불일치";
+  const isSamePw = pw === re_pw ? "" : "비밀번호가 일치하지 않습니다";
+  console.log(email, pw);
+  const goToLogin = () => {
+    // axios.post(
+    //   "http://localhost:8080/users/create",
+    //   {
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //   },
+    //   { data: { email: email, password: pw } }
+    // );
 
-  const goToLogin = () => {};
+    axios({
+      url: "http://localhost:8080/users/create",
+      method: "post",
+      data: {
+        email: email,
+        password: pw,
+      },
+    });
+  };
 
   return (
-    <>
-      <SignupPage>
-        <SignupText>회원가입하기</SignupText>
-        <Form>
-          <Label>이름을 입력하세요.</Label>
-          <Input type="text" name="name" onChange={handleInfo} />
-        </Form>
-        <Form>
-          <Label>E-mail을 입력하세요.</Label>
-          <Input type="email" name="email" onChange={handleInfo} />
-          <CheckPw>{email && isValidateId}</CheckPw>
-        </Form>
-        <Form>
-          <Label>비밀번호를 입력하세요</Label>
-          <Input
-            type="password"
-            name="pw"
-            placeholder="8자 이상 입력하세요"
-            onChange={handleInfo}
-          />
-          <CheckPw>{pw && isValidatePw}</CheckPw>
-        </Form>
-        <Form>
-          <Label>비밀번호를 한번 더 입력하세요</Label>
-          <Input
-            type="password"
-            name="re_pw"
-            placeholder="동일하게 입력해주세요"
-            onChange={handleInfo}
-          />
-          <CheckPw>{re_pw && isSamePw}</CheckPw>
-        </Form>
-        <Btn>
-          <SignupBtn
-            onClick={goToLogin}
-            disabled={isValidateId && isValidatePw}
-          >
-            회원가입하기
-          </SignupBtn>
-        </Btn>
-      </SignupPage>
-    </>
+    <SignupPage>
+      <SignupText>회원가입하기</SignupText>
+      <Form>
+        <Label>이름을 입력하세요.</Label>
+        <Input type="text" name="name" onChange={handleInfo} />
+      </Form>
+      <Form>
+        <Label>E-mail을 입력하세요.</Label>
+        <Input type="email" name="email" onChange={handleInfo} />
+        <Check>{email && isValidateId}</Check>
+      </Form>
+      <Form>
+        <Label>비밀번호를 입력하세요</Label>
+        <Input
+          type="password"
+          name="pw"
+          placeholder="8자 이상 입력하세요"
+          onChange={handleInfo}
+        />
+        <Check>{pw && isValidatePw}</Check>
+      </Form>
+      <Form>
+        <Label>비밀번호를 한번 더 입력하세요</Label>
+        <Input
+          type="password"
+          name="re_pw"
+          placeholder="동일하게 입력해주세요"
+          onChange={handleInfo}
+        />
+        <Check>{re_pw && isSamePw}</Check>
+      </Form>
+      <Btn>
+        <SignupBtn onClick={goToLogin} disabled={isValidateId && isValidatePw}>
+          회원가입하기
+        </SignupBtn>
+      </Btn>
+    </SignupPage>
   );
 };
 
@@ -89,19 +104,25 @@ const Form = styled.div`
 `;
 
 const Label = styled.div`
-  font-size: 1px;
   margin-bottom: 8px;
+  font-size: 1px;
 `;
 
 const Input = styled.input`
+  width: 100%;
   border: 1px solid gray;
   border-radius: 7px;
-  width: 100%;
+
+  ::placeholder {
+    font-size: 4px;
+    padding-left: 5px;
+  }
 `;
 
-const CheckPw = styled.div`
-  font-size: 2px;
+const Check = styled.div`
+  margin-top: 10px;
   color: red;
+  font-size: 2px;
 `;
 
 const Btn = styled.div`
