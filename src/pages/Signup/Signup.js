@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+  const navi = useNavigate();
   const [userInfo, setUserInfo] = useState({
     name: "",
     email: "",
@@ -17,12 +19,14 @@ const Signup = () => {
 
   const { email, pw, re_pw } = userInfo;
 
-  const isValidateId = email.includes("@" && ".") ? "" : "정확히 입력해주세요";
+  const isValidId = email.includes("@" && ".") ? "" : "정확히 입력해주세요";
 
-  const isValidatePw = pw.length >= 8 ? "" : "8자 이상 입력해주세요";
+  const isValidPw = pw.length >= 8 ? "" : "8자 이상 입력해주세요";
 
   const isSamePw = pw === re_pw ? "" : "비밀번호가 일치하지 않습니다";
-  console.log(email, pw);
+
+  const isValidLogin = email && pw && re_pw;
+
   const goToLogin = () => {
     // axios.post(
     //   "http://localhost:8080/users/create",
@@ -41,7 +45,15 @@ const Signup = () => {
         email: email,
         password: pw,
       },
-    });
+    })
+      .then((res) => {
+        localStorage.setItem("token", res.data.token);
+        if (res.data.token) {
+          alert("회원가입 성공!");
+          navi("/todo");
+        }
+      })
+      .catch((err) => alert(err.response.data.details));
   };
 
   return (
@@ -54,7 +66,7 @@ const Signup = () => {
       <Form>
         <Label>E-mail을 입력하세요.</Label>
         <Input type="email" name="email" onChange={handleInfo} />
-        <Check>{email && isValidateId}</Check>
+        <Check>{email && isValidId}</Check>
       </Form>
       <Form>
         <Label>비밀번호를 입력하세요</Label>
@@ -64,7 +76,7 @@ const Signup = () => {
           placeholder="8자 이상 입력하세요"
           onChange={handleInfo}
         />
-        <Check>{pw && isValidatePw}</Check>
+        <Check>{pw && isValidPw}</Check>
       </Form>
       <Form>
         <Label>비밀번호를 한번 더 입력하세요</Label>
@@ -77,7 +89,7 @@ const Signup = () => {
         <Check>{re_pw && isSamePw}</Check>
       </Form>
       <Btn>
-        <SignupBtn onClick={goToLogin} disabled={isValidateId && isValidatePw}>
+        <SignupBtn onClick={goToLogin} disabled={!isValidLogin}>
           회원가입하기
         </SignupBtn>
       </Btn>
